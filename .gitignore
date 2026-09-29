@@ -1,0 +1,5 @@
+# Everything the build produces or downloads. Weights, venv, .app and .dmg all live here;
+# none of it is ours to publish.
+target/
+.DS_Store
+WORKLOG.md

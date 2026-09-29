@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(brew:*)", "Bash(python3:*)", "Bash(python3.12:*)", "Bash(python3.13:*)",
+      "Bash(pip:*)", "Bash(pip3:*)", "Bash(pyinstaller:*)",
+      "Bash(target/venv/bin/*)", "Bash(./target/venv/bin/*)",
+      "Bash(git:*)", "Bash(gh:*)",
+      "Bash(curl:*)", "Bash(shasum:*)", "Bash(unzip:*)", "Bash(tar:*)",
+      "Bash(hdiutil:*)", "Bash(codesign:*)", "Bash(otool:*)", "Bash(install_name_tool:*)",
+      "Bash(dylibbundler:*)", "Bash(lipo:*)", "Bash(file:*)", "Bash(xattr:*)", "Bash(sips:*)",
+      "Bash(iconutil:*)", "Bash(sandbox-exec:*)", "Bash(xcrun:*)", "Bash(xcode-select:*)",
+      "Bash(open:*)", "Bash(du:*)", "Bash(find:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(grep:*)",
+      "Bash(tail:*)", "Bash(head:*)", "Bash(mkdir:*)", "Bash(cp:*)", "Bash(mv:*)", "Bash(chmod:*)",
+      "Bash(ln:*)", "Bash(env:*)", "Bash(zsh:*)", "Bash(bash:*)", "Bash(rm:target/*)", "Bash(rm -rf target/*)",
+      "Bash(rm INGEST.md)", "Bash(target/*)", "Bash(./target/*)", "Bash(sleep:*)",
+      "Read", "Edit", "Write", "Monitor"
+    ],
+    "deny": [
+      "Bash(git push:*)", "Bash(git remote add:*)", "Bash(sudo:*)",
+      "Bash(rm -rf /*)", "Bash(rm -rf ~*)", "Bash(rm -rf $HOME*)"
+    ]
+  }
+}

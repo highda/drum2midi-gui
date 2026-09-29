@@ -1,0 +1,23 @@
+drum2midi-gui: build recipe only
+
+This repository contains a build recipe. It contains no model weights, no upstream
+code (only a submodule pointer) and no built application. The licence in LICENSE
+covers the recipe alone.
+
+Everything below is fetched at build time onto the builder's own machine.
+Its licences are its own; sha256 values are enforced from recipe/checksums.txt.
+
+  drum2midi (submodule upstream/)   https://github.com/miraer/drum2midi @ ef2a36c062341ab0ea585874259ea396a94ae362
+  ADTOF-pytorch                     https://github.com/xavriley/ADTOF-pytorch @ 85c192e78f716ea0b111cc8a5ee4a8f6a3a4f8a9
+                                    (no licence file; ADTOF weights are CC BY-NC-SA 4.0)
+  MDX23C separator checkpoint       fetched by audio-separator (licence per its model card)
+  htdemucs                          fetched by audio-separator (MIT, Meta)
+  MuseScore_General.sf3             https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf3
+  ffmpeg (static arm64)             imageio-ffmpeg wheel (GPL/LGPL build of FFmpeg)
+  fluidsynth + dylibs               Homebrew fluid-synth (LGPL 2.1+) relocated with dylibbundler
+  PySide6 / Qt                      LGPL v3
+  torch, librosa, scikit-learn, ...  PyPI, see target/freeze.txt after a build
+
+Because several of these are non-commercial or unlicensed for redistribution,
+the built .app and .dmg are for personal use on the machine that built them.
+Do not redistribute them. See upstream's THIRD-PARTY-NOTICES.md.
