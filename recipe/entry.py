@@ -64,6 +64,9 @@ def selftest(root):
     return 0
 
 
+INTERPRETER_FLAGS = {"-B", "-s", "-S", "-E", "-I", "-O", "-OO", "-u", "-q", "-v"}
+
+
 def main():
     multiprocessing.freeze_support()
     if os.environ.get("DRUM2MIDI_EXE"):
@@ -73,6 +76,8 @@ def main():
     os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
     os.environ.setdefault("DRUM2MIDI_WORK", str(user_dir() / "work"))
     args = sys.argv[1:]
+    while args and args[0] in INTERPRETER_FLAGS:  # multiprocessing children are started as `exe -B -c code`
+        args = args[1:]
     if args[:1] == ["-c"]:
         return run_code(args[1], args[2:])
     if args[:1] == ["-m"]:

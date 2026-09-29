@@ -17,7 +17,7 @@ git clone --recurse-submodules <this repo>
 ```
 
 Requires an arm64 Mac, Xcode command-line tools and Homebrew. Output lands in `target/`
-(gitignored): `target/drum2midi.app`, `target/drum2midi.dmg`, logs in `target/logs/`.
+(gitignored): `target/dist/drum2midi.app`, `target/drum2midi.dmg`, logs in `target/logs/`.
 
 If you copy the app to another Mac, macOS will quarantine it:
 `xattr -dr com.apple.quarantine drum2midi.app`, or right-click, Open.

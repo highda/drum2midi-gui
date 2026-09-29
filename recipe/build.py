@@ -43,6 +43,7 @@ def env():
     pip("torch")
     pip("diffq", "--no-build-isolation")
     pip("audio-separator")
+    pip("samplerate==0.2.4", "--no-deps")  # 0.1.0 ships an x86_64 dylib linked to /usr/local; nothing imports it
     pip(*APP_DEPS)
     src = TARGET / "src" / "ADTOF-pytorch"
     if not src.exists():
@@ -193,12 +194,106 @@ def seed_models():
         check(f"uvr/{path.relative_to(models)}", path)
 
 
-PHASES = {"env": env, "stage": stage, "ffmpeg": ffmpeg, "fluidsynth": fluidsynth, "seed": seed_models}
+DIST = TARGET / "dist"
+APP = DIST / "drum2midi.app"
+PRUNE = ["torch/include", "torch/test", "torch/testing/_internal", "caffe2", "sklearn/tests",
+         "**/*.a"]
+
+
+def make_icon():
+    icon = TARGET / "icon.icns"
+    if icon.exists():
+        return
+    iconset = TARGET / "icon.iconset"
+    shutil.rmtree(iconset, ignore_errors=True)
+    iconset.mkdir()
+    logo = ROOT_STAGE / "docs" / "logo_256.png"
+    for size, name in ((16, "16x16"), (32, "16x16@2x"), (32, "32x32"), (64, "32x32@2x"), (128, "128x128"),
+                       (256, "128x128@2x"), (256, "256x256")):
+        run(["sips", "-z", str(size), str(size), str(logo), "--out", str(iconset / f"icon_{name}.png")], "freeze")
+    run(["iconutil", "-c", "icns", str(iconset), "-o", str(icon)], "freeze")
+
+
+def prune(app):
+    for pattern in PRUNE:
+        for path in list(app.rglob(pattern)):
+            if path.is_symlink() or path.is_file():
+                path.unlink()
+            elif path.is_dir():
+                shutil.rmtree(path)
+
+
+def sign(app):
+    for path in macho_files(app):
+        run(["codesign", "--force", "-s", "-", str(path)], "sign")
+    run(["codesign", "--force", "--deep", "-s", "-", str(app)], "sign")
+    run(["codesign", "--verify", "--deep", "--strict", str(app)], "sign")
+
+
+def freeze():
+    phase("freeze")
+    make_icon()
+    run([str(VENV / "bin" / "pyinstaller"), "--noconfirm", "--distpath", str(DIST),
+         "--workpath", str(TARGET / "build"), str(REPO / "recipe" / "drum2midi.spec")], "freeze", cwd=REPO)
+
+
+def finish():
+    phase("prune+sign")
+    prune(APP)
+    sign(APP)
+
+
+DMG = TARGET / "drum2midi.dmg"
+BANNER = """Personal use only: do not redistribute this app or dmg.
+It bundles components (ADTOF weights CC BY-NC-SA 4.0, ADTOF-pytorch without a licence file, others; see NOTICE).
+Copied to another Mac it gets quarantined: xattr -dr com.apple.quarantine drum2midi.app, or right-click, Open."""
+
+
+def package():
+    phase("package")
+    root = TARGET / "dmgroot"
+    shutil.rmtree(root, ignore_errors=True)
+    root.mkdir()
+    run(["ditto", str(APP), str(root / APP.name)], "package")
+    (root / "Applications").symlink_to("/Applications")
+    DMG.unlink(missing_ok=True)
+    run(["hdiutil", "create", "-volname", "drum2midi", "-srcfolder", str(root), "-ov", "-format", "UDZO",
+         str(DMG)], "package")
+    shutil.rmtree(root)
+
+
+def verify():
+    phase("verify")
+    result = subprocess.run([str(VPY), str(REPO / "recipe" / "verify.py")])
+    if result.returncode:
+        raise SystemExit("verification failed, see target/logs/verify.log")
+
+
+def mb(path):
+    out = subprocess.run(["du", "-sk", str(path)], capture_output=True, text=True, check=True).stdout
+    return int(out.split()[0]) // 1024
+
+
+def report(assume_yes):
+    print(f"app: {APP} ({mb(APP)} MB)\ndmg: {DMG} ({mb(DMG)} MB)\n\n{BANNER}")
+    if not assume_yes and input("Copy to /Applications? [y/N] ").strip().lower() == "y":
+        run(["ditto", str(APP), f"/Applications/{APP.name}"], "package")
+
+
+PHASES = {"env": env, "stage": stage, "ffmpeg": ffmpeg, "fluidsynth": fluidsynth, "seed": seed_models,
+          "freeze": freeze, "finish": finish, "package": package, "verify": verify}
+BUILD = ["env", "stage", "ffmpeg", "fluidsynth", "seed", "freeze", "finish", "package", "verify"]
 
 
 def main(argv):
-    for name in argv or PHASES:
+    flags = {a for a in argv if a.startswith("--")}
+    names = [a for a in argv if not a.startswith("--")]
+    if "--clean" in flags:
+        shutil.rmtree(TARGET, ignore_errors=True)
+    for name in names or [n for n in BUILD if n != "verify" or "--skip-verify" not in flags]:
         PHASES[name]()
+    if not names:
+        report("--yes" in flags)
 
 
 if __name__ == "__main__":
