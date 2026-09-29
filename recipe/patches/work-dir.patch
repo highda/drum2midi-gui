@@ -1,0 +1,11 @@
+--- a/drum2midi.py	2026-09-29 19:24:24
++++ b/drum2midi.py	2026-09-29 19:24:24
+@@ -1346,7 +1346,7 @@
+     if args.from_song:
+         log("[0/4] Pulling the drum stem out of the full mix ...")
+         try:
+-            src = extract_drums(src, dev_sep, ROOT / "work" / f"{src.stem}_drums.wav",
++            src = extract_drums(src, dev_sep, Path(os.environ.get("DRUM2MIDI_WORK", ROOT / "work")) / f"{src.stem}_drums.wav",
+                                 args.extractor)
+             log(f"      drum stem -> {src}")
+         except Exception as exc:

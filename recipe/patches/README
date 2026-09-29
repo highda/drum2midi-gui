@@ -1,1 +1,4 @@
-Patches applied to the staged copy of upstream (never to the submodule). None so far.
+Patches applied to the staged copy of upstream (never to the submodule), in name order, with `patch -p1`.
+
+work-dir.patch  --from-song wrote its drum stem to ROOT/work, inside the app bundle. The entry point sets
+                DRUM2MIDI_WORK to ~/Library/Application Support/drum2midi/work; unset, behaviour is unchanged.
