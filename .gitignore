@@ -1,5 +1,27 @@
-# Everything the build produces or downloads. Weights, venv, .app and .dmg all live here;
-# none of it is ours to publish.
+# Everything the build produces or downloads: venv, weights, soundfont, stage tree, PyInstaller
+# work dir, the .app and .dmg, logs. None of it is ours to publish.
 target/
-.DS_Store
+
+# Local working notes
 WORKLOG.md
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# PyInstaller output if run outside target/
+/build/
+/dist/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editors and local tool state
+.idea/
+.vscode/
+.claude/settings.local.json
