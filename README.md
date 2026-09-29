@@ -36,8 +36,8 @@ separator, and the benchmark and training scripts.
 - An **Apple Silicon** Mac (arm64) on macOS 12 or later. Intel, universal2 and Windows are out of scope.
 - Xcode command-line tools: `xcode-select --install`
 - [Homebrew](https://brew.sh)
-- Roughly 10 GB of free disk and a network connection for the build (the models alone are about 520 MB
-  and the frozen app is about 1.5 GB). A fresh, from-scratch build has not been timed; expect it to
+- About 6 GB of free disk for `target/` (measured: venv 2.5 GB, app 1.6 GB, dmg 0.9 GB, stage 0.6 GB), plus
+  Homebrew's own footprint, and a network connection for the build (the models alone are about 520 MB). A fresh, from-scratch build has not been timed; expect it to
   take a while, mostly downloads and verification.
 
 The wizard installs the Homebrew formulae it needs (`python@3.12`, `fluid-synth`, `dylibbundler`,
